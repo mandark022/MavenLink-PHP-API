@@ -1,0 +1,294 @@
+<?php 
+require 'path.php';
+
+final class MavenLink extends Paths{
+	private $userid = null;
+	private $apikey = null;
+	
+	public function __construct($userid=null,$apikey=null){
+		if(empty($apikey)){
+			throw new Exception('Invalid API Key.');
+		}
+		if(empty($userid)){
+			throw new Exception('Invalid UserID.');
+		}
+		$this->userid = $userid;
+		$this->apikey = $apikey;
+	}
+	
+	private function execute($curlsetup){			
+		$curlHandle = curl_init();				
+		curl_setopt_array($curlHandle,$curlsetup);
+		$data = curl_exec($curlHandle);
+		curl_close($curlHandle);
+		return $data;
+	}
+	
+	private function setCurlOpt($path){
+		$opt = array(
+			CURLOPT_URL=>$path,
+			CURLOPT_USERPWD=>sprintf('%s:%s',$this->userid,$this->apikey),
+			CURLOPT_RETURNTRANSFER=>true,
+			CURLOPT_HTTPAUTH=> CURLAUTH_ANY,                    
+			CURLOPT_SSL_VERIFYPEER=> false,
+			CURLINFO_HEADER_OUT=> true,
+		);
+		return $opt;		
+	}
+	
+	private function request_delete($path){
+		$setup 						  = $this->setCurlOpt($path);
+		$setup[CURLOPT_CUSTOMREQUEST] = 'DELETE';		
+		return $this->execute($setup);
+	}
+	
+	private function request_put($path,$args){
+		$setup 							= $this->setCurlOpt($path);
+		$setup[CURLOPT_CUSTOMREQUEST] 	= 'PUT';
+		$setup[CURLOPT_POSTFIELDS] 		= $args;
+		return $this->execute($setup);
+	}
+	private function request_post($path,$args){
+		$setup 							= $this->setCurlOpt($path);
+		$setup[CURLOPT_CUSTOMREQUEST] 	= 'POST';
+		$setup[CURLOPT_POSTFIELDS] 		= $args;
+		return $this->execute($setup);
+	}
+	
+	private function request_get($path,$args = null){
+		if(!empty($args)){ $path = $path.'?'.$args; }
+		$setup = $this->setCurlOpt($path);
+		return $this->execute($setup);
+	}
+	
+	/*User*/
+	public function getUsers(){
+		$path = $this->User();
+		return $this->request_get($path);
+	}
+	/**/
+	
+	/*Workspaces*/
+	public function getWorkspaces(){
+		$path = $this->Workspace();
+		return $this->request_get($path);
+	}
+	public function getWorkspace($id=null){
+		$path = $this->Workspace($id);
+		return $this->request_get($path);
+	}
+	public function createWorkspace($args=null){
+		$path = $this->Workspace();
+		$post = $this->postParams('workspace',$args);
+		return $this->request_post($path,$post);
+	}
+	public function updateWorkspace($id=null,$args=null){
+		$path = $this->Workspace($id);
+		$post = $this->postParams('workspace',$args);
+		return $this->request_put($path,$post);
+	}
+	/**/
+	
+	/*POST*/
+	public function getWorkspacePosts($workspaceid = null,$args = null){
+		$path = $this->Post($workspaceid);
+		return $this->request_get($path,$this->getParams($args));
+	}
+	public function getWorkspacePost($workspaceid = null,$id = null){
+		$path = $this->Post($workspaceid,$id);
+		return $this->request_get($path);
+	}
+	
+	public function createWorkspacePost($workspaceid,$array){
+		$path = $this->Post($workspaceid);
+		$post = $this->postParams('post',$array);
+		return $this->request_post($path,$post);
+	}
+	
+	public function updateWorkspacePost($workspaceid,$postid,$array){
+		$path = $this->Post($workspaceid,$postid);
+		$post = $this->postParams('post',$array);
+		return $this->request_put($path,$post);
+	}
+	
+	public function deleteWorkspacePost($workspaceid,$postid){
+		$path = $this->Post($workspaceid,$postid);
+		return $this->request_delete($path);
+	}
+	/**/
+	
+	/*Time Entry*/
+	public function getTimeEntries($workspaceid = null,$args = null){
+		$path = $this->TimeEntry($workspaceid);
+		return $this->request_get($path,$this->getParams($args));
+	}
+	public function getTimeEntry($workspaceid = null,$id = null){
+		$path = $this->TimeEntry($workspaceid,$id);
+		return $this->request_get($path);
+	}
+	
+	public function createTimeEntry($workspaceid,$array){
+		$path = $this->TimeEntry($workspaceid);
+		$post = $this->postParams('time_entry',$array);
+		return $this->request_post($path,$post);
+	}
+	
+	public function updateTimeEntry($workspaceid,$postid,$array){
+		$path = $this->TimeEntry($workspaceid,$postid);
+		$post = $this->postParams('time_entry',$array);
+		return $this->request_put($path,$post);
+	}
+	
+	public function deleteTimeEntry($workspaceid,$postid){
+		$path = $this->TimeEntry($workspaceid,$postid);
+		return $this->request_delete($path);
+	}
+	/**/
+	
+	/*Expenses*/
+	public function getExpenses($workspaceid = null,$args = null){
+		$path = $this->Expense($workspaceid);
+		return $this->request_get($path,$this->getParams($args));
+	}
+	public function getExpense($workspaceid = null,$id = null){
+		$path = $this->Expense($workspaceid,$id);
+		return $this->request_get($path);
+	}
+	
+	public function createExpense($workspaceid,$array){
+		$path = $this->Expense($workspaceid);
+		$post = $this->postParams('expense',$array);
+		return $this->request_post($path,$post);
+	}
+	
+	public function updateExpense($workspaceid,$postid,$array){
+		$path = $this->Expense($workspaceid,$postid);
+		$post = $this->postParams('expense',$array);
+		return $this->request_put($path,$post);
+	}
+	
+	public function deleteExpense($workspaceid,$postid){
+		$path = $this->Expense($workspaceid,$postid);
+		return $this->request_delete($path);
+	}
+	/**/
+	
+	/*Participants*/
+	public function getParticipants($workspaceid){
+		$path = $this->Participant($workspaceid);
+		return $this->request_get($path);
+	}
+	/**/
+	
+	/*Story*/
+	public function getStories($workspaceid,$args=null){
+		$path = $this->Story($workspaceid);
+		$get = $this->getParams($args);
+		return $this->request_get($path,$get);
+	}
+	
+	public function getStory($workspaceid,$id=null,$args=null){
+		$path = $this->Story($workspaceid,$id);
+		$get = $this->getParams($args);
+		return $this->request_get($path,$get);
+	}
+	
+	public function getAllStories(){
+		$path = $this->Story('all_visible');
+		return $this->request_get($path);
+	}
+	
+	public function createStory($workspaceid,$args){
+		$path = $this->Story($workspaceid);
+		$post = $this->storyParams('story',$args);
+		return $this->request_post($path,$post);
+	}
+	public function updateStory($workspaceid,$storyid,$args){
+		$path = $this->Story($workspaceid,$storyid);
+		$post = $this->storyParams('story',$args);
+		return $this->request_put($path,$post);
+	}
+	public function deleteStory($workspaceid,$storyid){
+		$path = $this->Story($workspaceid,$storyid);
+		return $this->request_delete($path);
+	}
+	private function storyParams($type,$array = array()){
+		if(empty($array)){ return array(); }
+		$tmp = array();
+		$wrap = '';
+		foreach($array as $key=>$value){
+			$wrap = sprintf('%s[%s]',$type,$key);
+			if(is_array($value)){
+				foreach($value as $skey=>$svalue){
+					$wrap = sprintf('%s[%s][]',$type,$key);
+					$tmp[$wrap] = $svalue;
+				}
+			}
+			else{
+				$tmp[$wrap] = $value;
+			}
+		}
+		return $tmp;
+	}
+	/**/
+	
+	/*Invitation*/
+	public function createInvitation($workspaceid,$array){
+		$path = $this->Invite($workspaceid);
+		$post = $this->postParams('invitation',$array);
+		return $this->request_post($path,$post);
+	}
+	/**/
+	
+	/*Events*/
+	public function getEvents($args = null){
+		$path = $this->Event();
+		$get = $this->getParams($args);
+		return $this->request_get($path,$get);
+	}
+	/**/
+	
+	/*Invoice*/
+	public function getInvoices($id=null,$args = null){
+		$path = $this->Invoice($id);
+		$get = $this->getParams($args);
+		var_dump($path);
+		return $this->request_get($path,$get);
+	}
+	/**/
+	
+	private function postParams($type,$array){
+		if(empty($array)){ return null; }
+		$tmp = array();
+		$wrap = '';
+		foreach($array as $key=>$value){
+			$wrap = sprintf('%s[%s]',$type,$key);
+			$tmp[$wrap] = $value;
+		}
+		return $tmp;
+	}
+	
+	private function getParams($array){
+		if(empty($array)){ return null; }
+		$string = null;
+		$wrap = null;
+		foreach($array as $key=>$value){
+			$wrap = sprintf('%s=%s',$key,urlencode($value));
+			if(empty($string)){
+				$string = $wrap;
+			}
+			else{
+				$string .= $wrap;
+			}
+		}
+		unset($wrap);
+		return $string;
+	}
+	
+	public function __destruct(){
+		unset($this->userid);
+		unset($this->apikey);
+	}
+}
+
+?>

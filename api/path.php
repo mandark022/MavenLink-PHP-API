@@ -1,0 +1,114 @@
+<?php 
+
+class Paths{
+	private $basepath = 'https://www.mavenlink.com/api/v0';
+	
+	protected function Workspace($id = null){
+		if(empty($id)){
+			return sprintf('%s/%s.json',$this->basepath,'workspaces');
+		}
+		else{
+			return sprintf('%s/%s/%s.json',$this->basepath,'workspaces',$id);
+		}
+	}
+	
+	protected function Invite($workspaceid = null,$id = null){
+		if(empty($workspaceid)){
+			throw new Exception('Invalid Workspace ID.');
+		}
+		if(empty($id)){
+			return sprintf('%s/%s/%s/invite.json',$this->basepath,'workspaces',$workspaceid);
+		}
+		else{
+			return sprintf('%s/%s/%s/invite/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
+		}
+	}
+	
+	protected function Participant($workspaceid = null,$id = null){
+		if(empty($workspaceid)){
+			throw new Exception('Invalid Workspace ID.');
+		}
+		if(empty($id)){
+			return sprintf('%s/%s/%s/participants.json',$this->basepath,'workspaces',$workspaceid);
+		}
+		else{
+			return sprintf('%s/%s/%s/participants/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
+		}
+	}
+	
+	protected function Event(){
+		return sprintf('%s/events.json',$this->basepath);
+	}
+	
+	protected function User(){
+		return sprintf('%s/%s.json',$this->basepath,'users');
+	}
+	
+	protected function Invoice($id = null){
+		if(empty($id)){
+			return sprintf('%s/%s.json',$this->basepath,'invoices');
+		}
+		else{
+			return sprintf('%s/%s/%s.json',$this->basepath,'invoices',$id);
+		}
+		return null;
+	}
+	
+	protected function TimeEntry($workspaceid=null,$id = null){
+		if(empty($workspaceid)){
+			throw new Exception('Invalid Workspace ID.');
+		}
+		if(empty($id)){
+			return sprintf('%s/%s/%s/time_entries.json',$this->basepath,'workspaces',$workspaceid);
+		}
+		else{
+			return sprintf('%s/%s/%s/time_entries/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
+		}
+		return null;
+	}
+	
+	protected function Expense($workspaceid=null,$id = null){
+		if(empty($workspaceid)){
+			throw new Exception('Invalid Workspace ID.');
+		}
+		if(empty($id)){
+			return sprintf('%s/%s/%s/expenses.json',$this->basepath,'workspaces',$workspaceid);
+		}
+		else{
+			return sprintf('%s/%s/%s/expenses/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
+		}
+		return null;
+	}
+	
+	protected function Story($workspaceid = null,$id = null){
+		if(empty($workspaceid)){
+			throw new Exception('Invalid Workspace ID.');
+		}
+		if($workspaceid == 'all_visible'){
+			return sprintf('%s/stories/all_visible.json',$this->basepath);
+		}
+		else if(empty($id)){
+			return sprintf('%s/%s/%s/stories.json',$this->basepath,'workspaces',$workspaceid);
+		}
+		else{
+			return sprintf('%s/%s/%s/stories/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
+		}
+		return null;
+		
+	}
+	
+	protected function Post($workspaceid = null,$id =  null){
+		if(empty($workspaceid)){
+			throw new Exception('Invalid Workspace ID.');
+		}
+		if(empty($id)){
+			return sprintf('%s/%s/%s/posts.json',$this->basepath,'workspaces',$workspaceid);
+		}
+		else{
+			var_dump(sprintf('%s/%s/%s/posts/%s.json',$this->basepath,'workspaces',$workspaceid,$id));
+			return sprintf('%s/%s/%s/posts/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
+		}
+	}
+}
+
+?>
