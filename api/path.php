@@ -105,7 +105,6 @@ class Paths{
 			return sprintf('%s/%s/%s/posts.json',$this->basepath,'workspaces',$workspaceid);
 		}
 		else{
-			var_dump(sprintf('%s/%s/%s/posts/%s.json',$this->basepath,'workspaces',$workspaceid,$id));
 			return sprintf('%s/%s/%s/posts/%s.json',$this->basepath,'workspaces',$workspaceid,$id);
 		}
 	}

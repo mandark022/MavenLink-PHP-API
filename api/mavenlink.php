@@ -249,7 +249,6 @@ final class MavenLink extends Paths{
 	public function getInvoices($id=null,$args = null){
 		$path = $this->Invoice($id);
 		$get = $this->getParams($args);
-		var_dump($path);
 		return $this->request_get($path,$get);
 	}
 	/**/
